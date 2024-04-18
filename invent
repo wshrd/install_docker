@@ -1,0 +1,5 @@
+[s-docker]
+192.168.1.90
+[s-docker:vars]
+ansible_user = root
+ansible_become_password=Pa$$word

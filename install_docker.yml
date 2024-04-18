@@ -1,0 +1,49 @@
+---
+- name: Setup Docker
+  hosts: all
+  become: true
+  vars_files:
+    - repo.yml
+  tasks:
+    - name: Install dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+          - python3-apt
+        state: present
+        update_cache: yes
+    - name: Add GPG key
+      apt_key:
+        url: "{{ gpg }}"
+        state: present
+    - name: Add docker repository to apt
+      apt_repository:
+        repo: "{{ repo }}"
+        state: present
+    - name: Install docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose
+        state: latest
+        update_cache: yes
+    - name: Check docker is active
+      service:
+        name: docker
+        state: started
+        enabled: yes
+    - name: Ensure group docker exists
+      group:
+        name: docker
+        state: present
+    - name: Adding user adm1n to docker group
+      user:
+        name: adm1n
+        groups: docker
+        append: yes
